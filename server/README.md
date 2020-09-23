@@ -23,3 +23,7 @@ The get method `taskStatus/{task_id}` returns a task status. A task id is a rand
 All task data, input files and resulting files, are stored in `server/task` directory. They are not being removed. They will be in the future.
 
 Tasks statuses are in memory. So at the moment, tasks are lost when the server is restarted.
+
+`hello-wasi.wasm` is an examplary wasm binary for a task.
+
+Tested with `1.46` rust.
