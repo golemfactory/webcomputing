@@ -166,15 +166,75 @@ async fn task_done(
 
 //a client downloads files for a task
 #[get("/task/{task_id}/{file_name}")]
-async fn task_file(
-    web::Path((task_id, file_name)): web::Path<(String, String)>,
-) -> Result<NamedFile> {
+async fn task_file(web::Path((task_id, file_name)): web::Path<(String, String)>,) -> Result<NamedFile> {
     Ok(NamedFile::open(
         Path::new("task")
             .join(task_id)
             .join("input")
             .join(file_name),
     )?)
+}
+
+//gFaaS downloads output files
+#[get("/taskResult/{task_id}/{file_name}")]
+async fn task_result_file(web::Path((task_id, file_name)): web::Path<(String, String)>,) -> Result<NamedFile> {
+    Ok(NamedFile::open(
+        Path::new("task")
+            .join(task_id)
+            .join("result")
+            .join(file_name),
+    )?)
+}
+
+//gFaaS reads a list of output files
+#[get("/taskResult/{task_id}")]
+async fn task_result(web::Path(task_id): web::Path<String>) -> Result<HttpResponse> {
+    {
+        let tasks_map = TASKS.lock().unwrap();
+        let status = tasks_map.get(&task_id);
+        match status {
+            Some(s) => {
+                if *s != TaskStatus::Completed {
+                    return Ok(HttpResponse::Conflict().finish());
+                }
+            }
+            None => return Ok(HttpResponse::NotFound().finish()),
+        }
+    }
+
+    let task_result_dir = format!("task/{}/result", task_id);
+    let task_result_path = Path::new(&task_result_dir);
+    if !task_result_path.is_dir() {
+        return Ok(HttpResponse::InternalServerError()
+            .content_type("plain/text")
+            .body("no result directory"));
+    }
+    
+    let mut response = String::from("{\"output_files\":[");
+    let mut first = true;
+
+    for entry in fs::read_dir(task_result_path)? {
+        let entry = entry?;
+        if !entry.path().is_file() {
+            continue;
+        }
+        let file_name = entry.file_name();
+        response.push('"');
+        response.push_str(file_name.to_str().unwrap());
+        response.push('"');
+        if first {
+            first = false;
+        } else {
+            response.push(',');
+        }
+    }
+
+    response.push_str("]}");
+
+    return Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(response));
+
 }
 
 //gFaaS checks a task status
@@ -240,7 +300,9 @@ async fn main() -> std::io::Result<()> {
             .service(check_for_task)
             .service(task_done)
             .service(task_file)
+            .service(task_result_file)
             .service(task_status)
+            .service(task_result)
             .service(create_task)
     })
     .bind("127.0.0.1:8080")?
