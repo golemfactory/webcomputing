@@ -43,6 +43,11 @@ async fn hello() -> impl Responder {
     "Hello there!"
 }
 
+#[get("/favicon.ico")]
+async fn favicon() -> Result<NamedFile> {
+    Ok(NamedFile::open("favicon-32x32.png")?)
+}
+
 //main page for a client
 #[get("/")]
 async fn index() -> Result<NamedFile> {
@@ -304,8 +309,9 @@ async fn main() -> std::io::Result<()> {
             .service(task_status)
             .service(task_result)
             .service(create_task)
+            .service(favicon)
     })
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
