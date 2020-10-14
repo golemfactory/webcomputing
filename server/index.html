@@ -7,23 +7,47 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Golem.Lab WebComputing</title>
     <style>
-      .wasi { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      .wasi { padding-right: 0; margin-left: auto; margin-right: auto;  }
       textarea.wasi { font-family: monospace; width: 80%; }
       div.wasi { text-align: center; }
-      div.wasi_border { border: 1px solid black; }
-      button.wasi { border-radius: 8px; padding: 4px 8px; border-width: 2px;}
+      button.wasi { border-radius: 8px; padding: 4px 8px; border-width: 3px;}
+      .tinfo { padding: 20px 5px 20px 5px; margin-left: auto; margin-right: auto;  text-align: center; } 
     </style>
   </head>
-  <body>
-    <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>WASI</strong></center></figure>
-    <div class="wasi" id="status">Downloading...</div>
-    <div class="wasi">
+  <body style="background-color: #EAF5F5;">
+    <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>Golem.Lab</strong></center></figure>
+    <div class="wasi" style="display: block;" id="status">Downloading...</div>
+    <div class="wasi" style="display: block;">
       <progress value="0" max="100" id="progress" hidden=1></progress>  
     </div>
-    <img class="wasi" src="https://wasi.dev/polyfill/WASI-small.png" width="200" height="200" border="0" alt="WASI logo">
+    <img class="wasi" style="display: block;" src="golemlab.png" height="120" border="0" alt="Golem.Lab logo">
+    <div class="wasi"><h1>Web Computing page</h1></div>
 
-    <button class="wasi" onclick="checkingSwitched();" id="check_for_task" disabled=true>Click to activate computing ...</button>
-    <input class="wasi" type="text" value="wait ..." id="task_status" disabled="true" size="50"></input>
+    <div class="tinfo">
+      Welcome to Web Computing project page. This is an experiment and the work is still in progress. 
+      Your web browser can compute tasks and contribute to a one of scientific projects.
+      Having many nodes we can achieve the power of a cloud to boost up science computations.
+      It is the volunteer computing that does not need installation, is flexible and secure.
+    </div>
+
+    <div class="tinfo">
+      Just keep this page open. Click the button below to enable computation. 
+      Your web browser will connect to the server, will be getting tasks and compute them one by one.
+      Check the status field and the log below to see how many tasks was computed so far.
+      The computations will continue even if you lock the screen.
+      To stop computations, click again the button below or simply close this page.
+    </div>
+
+    <div class="tinfo">
+      <table width="80%"><tr>
+        <td width="50%">
+	  <button class="wasi" style="font-size: larger;" onclick="checkingSwitched();" id="check_for_task" disabled=true>Click to activate computing ...</button>
+	</td>
+	<td width="50%">
+          <input class="wasi" style="font-size: larger; text-align:center;" type="text" value="wait ..." id="task_status" disabled="true" size="50"></input>
+	</td>
+      </tr></table>
+    </div>
 
     <script type='text/javascript'>
 
@@ -65,14 +89,14 @@
       function checkingSwitched() {
 	      if (document.getElementById("check_for_task").checkingActive == false) {
 		      document.getElementById("check_for_task").textContent = "Computing activated! Click to deactivate.";
-		      document.getElementById("check_for_task").style="background-color:#E5FFCC";
+		      document.getElementById("check_for_task").style="background-color:#E5FFCC; font-size: larger;";
 		      document.getElementById("check_for_task").checkingActive = true;
 		      if (document.getElementById("check_for_task").checkingBusy == false) {
 			      keepChecking();
 		      }
 	      } else {
 		      document.getElementById("check_for_task").textContent = "Click to activate computing ...";
-		      document.getElementById("check_for_task").style="background-color:#FFCCCC";
+		      document.getElementById("check_for_task").style="background-color:#FFCCCC; font-size: larger;";
 		      document.getElementById("check_for_task").checkingActive = false;
 	      }
       }
@@ -133,11 +157,19 @@
       }
     </script>
 
-    <hr>
-
-    output:<textarea class="wasi" id="output" rows="8"></textarea>
-    error:<textarea class="wasi" id="error" rows="8"></textarea>
-    log:<textarea class="wasi" id="computingLog" rows="8"></textarea>
+    <table width="100%">
+      <tr>
+	<td width="15%"><div class="wasi">Output of the recent task</div></td>
+	<td width="85%"><textarea class="wasi" id="output" rows="8"></textarea></td>
+      <tr>
+	<td><div class="wasi">Errors from the recent task computation</div></td>
+	<td><textarea class="wasi" id="error" rows="8"></textarea></td>
+      </tr>
+      <tr>
+	<td><div class="wasi">Log of Web Computing (aggregative)</div></td>
+	<td><textarea class="wasi" id="computingLog" rows="8"></textarea></td>
+      </tr>
+    </table>
 
     <script type='text/javascript'>
       var statusElement = document.getElementById('status');
@@ -206,11 +238,15 @@
       };
     </script>
     <script async type="text/javascript" src="https://wasi.dev/polyfill/polyfill.js"></script>
-    <div>
-        This is a simple Web polyfill demo of <a href="https://github.com/WebAssembly/WASI">WASI</a>,
-        a portable system interface for WebAssembly, allowing simple WASI programs that
-        print to stout to be run in a browser. See <a href="https://wasi.dev/">wasi.dev</a> for
-        more information on using WASI.
+
+    <div class="tinfo">
+	    Web Computing uses web browser's WebAssembly runtime as the computing engine with performance comparable to native calculations.
+	    Supported tasks are <a href="https://github.com/WebAssembly/WASI">WASI</a> programs,
+            a portable system interface for WebAssembly. See <a href="https://wasi.dev/">wasi.dev</a> for
+            more information on using WASI.
+            Web Computing is based on the experimental <a href="https://wasi.dev/polyfill/">WASI Web polyfill</a>.
+            At the moment supported tasks print to stdout and are executed in a single thread. 
+	    More advanced computations will be enabled in the future.
     </div>
   </body>
 </html>

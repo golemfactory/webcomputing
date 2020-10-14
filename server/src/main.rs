@@ -48,6 +48,11 @@ async fn favicon() -> Result<NamedFile> {
     Ok(NamedFile::open("favicon-32x32.png")?)
 }
 
+#[get("/golemlab.png")]
+async fn golemlab_logo() -> Result<NamedFile> {
+    Ok(NamedFile::open("golemlabinv.png")?)
+}
+
 //main page for a client
 #[get("/")]
 async fn index() -> Result<NamedFile> {
@@ -310,6 +315,7 @@ async fn main() -> std::io::Result<()> {
             .service(task_result)
             .service(create_task)
             .service(favicon)
+            .service(golemlab_logo)
     })
     .bind("0.0.0.0:8080")?
     .run()
